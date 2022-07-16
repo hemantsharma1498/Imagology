@@ -14,6 +14,31 @@ module.exports = app => {
   });
 
   app.get('/api/blogs', requireLogin, async (req, res) => {
+      //Adding temporary route specific redis cacheing layer
+      const redis=require('redis');
+      const {promisify}=require('util').promisify;
+
+      //Instantiate redis client instance
+      const client=redis.createClient({
+        host:'127.0.0.1',
+        port:6379
+      });
+
+
+      //Promisify client.get's callback requirement
+      client.get=promisify(client.get);
+
+      //Assign return value to variable
+      let cachedResult=await client.get(req.user.id);
+
+
+
+
+
+
+
+
+
     const blogs = await Blog.find({ _user: req.user.id });
 
     res.send(blogs);
