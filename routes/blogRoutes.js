@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const requireLogin = require('../middlewares/requireLogin');
-
+const {clearHash}=require('../services/cache');
 const Blog = mongoose.model('Blog');
 
 module.exports = app => {
@@ -14,37 +14,18 @@ module.exports = app => {
   });
 
   app.get('/api/blogs', requireLogin, async (req, res) => {
-      //Adding temporary route specific redis cacheing layer
-      const redis=require('redis');
-      const {promisify}=require('util').promisify;
+     
+      const blogs = await Blog
+        .find({ _user: req.user.id })
+        .cache({key:req.user.id})
+        .limit(10)
+        .sort();
+     
+      res.send(blogs);
 
-      //Instantiate redis client instance
-      const client=redis.createClient({
-        host:'127.0.0.1',
-        port:6379
-      });
-
-
-      //Promisify client.get's callback requirement
-      client.get=promisify(client.get);
-
-      //Assign return value to variable
-      let cachedResult=await client.get(req.user.id);
-
-
-
-
-
-
-
-
-
-    const blogs = await Blog.find({ _user: req.user.id });
-
-    res.send(blogs);
   });
 
-  app.post('/api/blogs', requireLogin, async (req, res) => {
+  app.post('/api/blogs', requireLogin, clearHash, async (req, res) => {
     const { title, content } = req.body;
 
     const blog = new Blog({
@@ -59,5 +40,7 @@ module.exports = app => {
     } catch (err) {
       res.send(400, err);
     }
+
+    
   });
 };
