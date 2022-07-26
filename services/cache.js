@@ -35,7 +35,6 @@ mongoose.Query.prototype.cache=function(options={}){
 
 //Logic for function
 mongoose.Query.prototype.exec=async function(){
-    console.log('Happening')
 
     //Check if query is to be cached
     if(!this.useCache){
