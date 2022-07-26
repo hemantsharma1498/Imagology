@@ -3,6 +3,7 @@
  */
 const e = require('express');
 const mongoose=require('mongoose');
+const { nextTick } = require('process');
 const redis=require('redis');
 const util=require('util');
 
@@ -26,8 +27,7 @@ mongoose.Query.prototype.cache=function(options={}){
     this.useCache=true;
    
      
-    this.topLevelKey=JSON.stringify(JSON.stringify(options.key ||''));
-    var topLevelKeyString=this.topLevelKey;
+    this.topLevelKey=JSON.stringify(options.key||'');
    
     return this;
 }
@@ -35,6 +35,7 @@ mongoose.Query.prototype.cache=function(options={}){
 
 //Logic for function
 mongoose.Query.prototype.exec=async function(){
+    console.log('Happening')
 
     //Check if query is to be cached
     if(!this.useCache){
@@ -63,7 +64,6 @@ mongoose.Query.prototype.exec=async function(){
             return new this.model(data);
         }
     }    
-
     //Otherwise execute query and store inside Redis
     const result=await exec.apply(this, arguments);
 
@@ -74,14 +74,16 @@ mongoose.Query.prototype.exec=async function(){
 
 //Functionality to clear hashKey for a Query
 module.exports={
-    clearHash(topLevelKeyString){
+    clearHash(topLevelKey){
         
-        client.del(JSON.stringify(topLevelKeyString), (error, result)=>{
+        client.del(topLevelKey.toString(), (error, result)=>{
             if(!error){
                 console.log('Clear hash succesful');
             }else{
                 console.log('Clear hash unsuccesful');
             }
         });
+    
+        
     }
 };
