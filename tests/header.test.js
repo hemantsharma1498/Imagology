@@ -1,30 +1,22 @@
 /*
  *Dependencies
  */
+const { session } = require('passport');
 const puppeteer=require('puppeteer');
-const Buffer=require('safe-buffer').Buffer;
-const Keygrip=require('keygrip');
-const keys=require('../config/keys');
-
+const Page=require('./helpers/page');
 
 //Global vars required for tests
-let browser, page;
+let page;
 
 //Open a browser window and page before runing tests
 beforeEach(async ()=>{
-    browser=await puppeteer.launch({
-        headless:false
-    });
-
-    page=await browser.newPage();
-
+    page=await Page.build();
     await page.goto('localhost:3000');
-
 });
 
 //Close the browser window after each test
 afterEach(async ()=>{
-    await browser.close();
+    await page.close();
 });
 
 
@@ -32,7 +24,7 @@ afterEach(async ()=>{
 test('Header has correct text', async()=>{
 
     
-    const headerText=await page.$eval('a.left.brand-logo', el=>el.innerHTML);
+    const headerText=await page.getContent('a.left.brand-logo');
 
     expect(headerText).toEqual('Blogster');
 
@@ -52,30 +44,11 @@ test('Correct Sign-In redirect', async()=>{
 
 //Create a pseudo session by faking cookies
 test('Test session with fake cookies should show logout button', async()=>{
-    //Blog user Id pulled from MongoDB
-    const id='62d6af36dbe42e23a0df561a';
-
-    const sessionObject={
-        passport:{
-            user: id
-        }
-    }
-
-    const sessionString=Buffer.from(JSON.stringify(sessionObject)).toString('base64');
-
-    const keygrip=new Keygrip([keys.cookieKey]);
-
-    const sig=keygrip.sign('session='+sessionString);
-
-    await page.setCookie({name:'session', value:sessionString});
-    await page.setCookie({name:'session.sig', value:sig});
-
-
-    //Refresh page to reflect changes
-    await page.reload();
+    
+    await page.login();
 
     //Check if logout button exists
-    let logoutText= await page.$eval('a[href="/auth/logout"]', el=>el.innerHTML);
+    let logoutText= await page.getContent('a[href="/auth/logout"]');
     expect(logoutText).toMatch('Logout')
 });
 
