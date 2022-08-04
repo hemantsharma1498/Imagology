@@ -11,7 +11,7 @@ let page;
 //Open a browser window and page before runing tests
 beforeEach(async ()=>{
     page=await Page.build();
-    await page.goto('localhost:3000');
+    await page.goto('http://localhost:3000');
 });
 
 //Close the browser window after each test

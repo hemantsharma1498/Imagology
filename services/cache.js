@@ -6,12 +6,13 @@ const mongoose=require('mongoose');
 const { nextTick } = require('process');
 const redis=require('redis');
 const util=require('util');
+const keys=require('../config/keys');
 
 
 //Set up cache server
 const client=redis.createClient({
     socket:{
-        host:'redis://127.0.0.1',
+        host:keys.redisUrl,
         port:6379
     }
 });
