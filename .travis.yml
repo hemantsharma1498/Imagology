@@ -9,8 +9,8 @@ env:
   -NODE_ENV=ci PORT=3000
 cache:
   directories:
-    -node_modules
-    -client/node_modules 
+    - node_modules
+    - client/node_modules 
 install:
   -npm install
   -npm run build
