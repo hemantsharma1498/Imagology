@@ -12,8 +12,8 @@ cache:
     - node_modules
     - client/node_modules 
 install:
-  - yarn install --omit=dev
-  - yarn run build
+  - npm install
+  - npm run build
 script:
   - nohup npm run start &
   - sleep 3
