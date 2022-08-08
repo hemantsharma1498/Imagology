@@ -13,9 +13,9 @@ beforeEach(async()=>{
 
 });
 
-afterEach(async()=>{
-    await page.close();
-});
+// afterEach(async()=>{
+//     await page.close();
+// });
 
 
 describe('When logged in', async()=>{
@@ -31,23 +31,23 @@ describe('When logged in', async()=>{
         expect(label).toEqual('Blog Title')
     });
 
-    describe('when input is invalid', async()=>{
+    // describe('when input is invalid', async()=>{
         
-        beforeEach(async()=>{
-            await page.click('form button');
-        });
+    //     beforeEach(async()=>{
+    //         await page.click('form button');
+    //     });
         
-        test('error message appears on screen', async()=>{
+    //     test('error message appears on screen', async()=>{
 
-            let titleError=await page.getContent('.title .red-text');
-            let contentError=await page.getContent('.content .red-text');
+    //         let titleError=await page.getContent('.title .red-text');
+    //         let contentError=await page.getContent('.content .red-text');
 
            
-            expect(titleError).toEqual('You must provide a value');
-            expect(contentError).toEqual('You must provide a value');
+    //         expect(titleError).toEqual('You must provide a value');
+    //         expect(contentError).toEqual('You must provide a value');
 
-        });
-    });
+    //     });
+    // });
 
     describe('when input is valid', async()=>{
         beforeEach(async()=>{
@@ -57,11 +57,11 @@ describe('When logged in', async()=>{
             await page.click('form button');
         });
 
-        test('submitting takes user to review screen', async()=>{
-            let confirmationText=await page.getContent('h5');
+        // test('submitting takes user to review screen', async()=>{
+        //     let confirmationText=await page.getContent('h5');
 
-            expect(confirmationText).toEqual('Please confirm your entries');
-        });
+        //     expect(confirmationText).toEqual('Please confirm your entries');
+        // });
 
         test('submitting then saving adds blog to blogs page', async()=>{
             await page.click('button.green');
@@ -80,44 +80,44 @@ describe('When logged in', async()=>{
 });
 
 
-describe('when not logged in', async()=>{
-    test('user cannot create posts', async()=>{
+// describe('when not logged in', async()=>{
+//     test('user cannot create posts', async()=>{
 
-        let status=await page.evaluate(()=>{
+//         let status=await page.evaluate(()=>{
         
-            return fetch('/api/blogs', {
-                method:'POST',
-                credentials:'same-origin',
-                headers:{
-                    'Content-Type':'application/json'
-                },
-                body:JSON.stringify({title:'Test title', content:'Test content'})
+//             return fetch('/api/blogs', {
+//                 method:'POST',
+//                 credentials:'same-origin',
+//                 headers:{
+//                     'Content-Type':'application/json'
+//                 },
+//                 body:JSON.stringify({title:'Test title', content:'Test content'})
 
-            }).then(res=>res.json()); //fetch returns raw data, needs to be converted to valid JSON
+//             }).then(res=>res.json()); //fetch returns raw data, needs to be converted to valid JSON
 
-        }
+//         }
         
-        );
+//         );
 
-        expect(status).toEqual({error: 'You must log in!'});
-    });
+//         expect(status).toEqual({error: 'You must log in!'});
+//     });
 
 
-    test('user cannot see existing posts', async()=>{
+//     test('user cannot see existing posts', async()=>{
         
-        let posts=await page.evaluate(()=>{
+//         let posts=await page.evaluate(()=>{
             
-            return fetch('/api/blogs', {
-                method: 'GET',
-                credentials:'same-origin',
-                headers:{
-                    'Content-Type':'application/json'
-                }
-            }).then(res=>res.json());
-        }
+//             return fetch('/api/blogs', {
+//                 method: 'GET',
+//                 credentials:'same-origin',
+//                 headers:{
+//                     'Content-Type':'application/json'
+//                 }
+//             }).then(res=>res.json());
+//         }
         
-        );
+//         );
 
-        expect(posts).toEqual({error: 'You must log in!'});
-    });
-});
+//         expect(posts).toEqual({error: 'You must log in!'});
+//     });
+// });

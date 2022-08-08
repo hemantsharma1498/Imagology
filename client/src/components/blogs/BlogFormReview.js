@@ -46,7 +46,7 @@ class BlogFormReview extends Component {
 
     const { submitBlog, history, formValues } = this.props;
 
-    submitBlog(formValues, this.state.file,history);
+    submitBlog(formValues, this.state.file, history);
   }
 
   onFileChange(event){
